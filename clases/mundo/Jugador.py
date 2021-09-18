@@ -25,7 +25,15 @@ class Jugador:
         return self.__ganados
     def darPerdidos(self):
         return self.__perdidos;
-    #Métodos normales
+    #Métodos settes
+    def setJugados(self,pJugados):
+        self.__jugados=pJugados
+    def setPerdidos(self,pPerdidos):
+        self.__perdidos=pPerdidos
+    def setGanados(self,pGanados):
+        self.__ganados=pGanados
+    def setAcumulado(self,pAcumulado):
+        self.__acumulado=pAcumulado
 
     def __str__(self):
         '''()->str devuelve el formato de un objeto Jugador

@@ -119,6 +119,37 @@ class Millonario:
                 pregunta = self.__preguntas[i]
             i += 1
         return pregunta
+    def actualizarYouLost(self, pJugador):
+        pJugador.setJugados(pJugador.darJugados()+1)
+        pJugador.setPerdidos(pJugador.darPerdidos()+1)
+        miConexion=sqlite3.connect('../../data/bd/millonario.db')
+        miCursor=miConexion.cursor()
+        miCursor.execute('update jugador set jugados=?,perdidos=? where id=?',(pJugador.darJugados(),pJugador.darPerdidos(),pJugador.darId()))
+        miConexion.commit()
+        miConexion.close()
+
+    def actualizarYouWin(self, pJugador, pAcumulado):
+        pJugador.setJugados(pJugador.darJugados()+1)
+        pJugador.setGanados(pJugador.darGanados() + 1)
+        total=pAcumulado+pJugador.darAcumulado()
+        pJugador.setAcumulado(total)
+        miConexion=sqlite3.connect('../../data/bd/millonario.db')
+        miCursor=miConexion.cursor()
+        miCursor.execute('update jugador set acumulado=?,jugados=?,ganados=? where id=?',(total,pJugador.darJugados(),pJugador.darGanados(),pJugador.darId()))
+        miConexion.commit()
+        miConexion.close()
+    def buscarJugadorPorNombre(self,pNombre):
+        i=0
+        encontrado=False
+        jugador=None
+        while i< len(self.__jugadores) and not encontrado:
+            if self.__jugadores[i].darNombre()==pNombre:
+                encontrado=True
+                jugador=self.__jugadores[i]
+            i+=1
+        return jugador
+
+
 #princial=Millonario()
 #princial.cargarJugadores()
 #princial.cargarPreguntas()

@@ -8,6 +8,7 @@ class InterfazJugar(QDialog):
         super().__init__()
         self.ui=Ui_Dialog()
         self.ui.setupUi(self)
+        self.nombre=pNombre
         '''Cargar nombre de jugador'''
         self.ui.lblNombre.setText('< html > < head / > < body > < p > < span style =\" font-size:12pt; font-weight:600; font-style:italic; color:#005500;\">'+pNombre+'</span></p></body></html>')
         self.nivel=1
@@ -20,6 +21,7 @@ class InterfazJugar(QDialog):
         self.ui.btnConfirmar.clicked.connect(self.confirmarRespuesta)
         '''acumulado'''
         self.acumulado=0
+
 
     def cargarPregunta(self):
         preguntasBasicas=[]
@@ -170,9 +172,14 @@ class InterfazJugar(QDialog):
                     self.acumulado += Categoria.ALTO.value
                     self.ui.lblAcumulado.setText("<html><head/><body><p><span style=\" font-weight:600; color:#aa0000;\">"+str('${:,.2f}'.format(self.acumulado))+"</span></p></body></html>")
                     QMessageBox.information(self,'Victoria','¡Ganaste el juego! Acumulado: '+str('${:,.2f}'.format(self.acumulado)))
+                    jugador=princi.buscarJugadorPorNombre(self.nombre)
+                    princi.actualizarYouWin(jugador,self.acumulado)
 
                 else:
                     QMessageBox.information(self, 'Correcto', 'Es correcto pasa al siguiente nivel')
                     self.cargarPregunta()
             else:
+                self.acumulado=0
                 QMessageBox.critical(self,'Incorrecto','Ha perdido su acumulado')
+                jugador=princi.buscarJugadorPorNombre(self.nombre)
+                princi.actualizarYouLost(jugador)

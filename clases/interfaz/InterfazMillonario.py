@@ -1,6 +1,6 @@
 #Clase principal de la interfaz de usuario
 from clases.interfaz.PanelMillonario import *
-from PyQt5.QtWidgets import QMainWindow,QApplication,QInputDialog,QMessageBox
+from PyQt5.QtWidgets import QMainWindow,QApplication,QInputDialog
 #from clases.mundo.Millonario import *
 from clases.interfaz.InterfazJugar import *
 import sys
@@ -71,12 +71,14 @@ class InterfazMillonario(QMainWindow):
             self.ui.txtGanados.setText(str(self.jugadores[item].darGanados()))
             self.ui.txtPerdidos.setText(str(self.jugadores[item].darPerdidos()))
             self.ui.txtRetirados.setText(str(self.jugadores[item].darRetirados()))
+
     def jugar(self):
         item=self.ui.listWidgetJugadores.currentRow()
         if item>=0:
             nombre=self.jugadores[item].darNombre()
             dialogoJugar=InterfazJugar(nombre,self.preguntas,self.respuestas)
             dialogoJugar.exec()
+
         else:
             QMessageBox.warning(self,'Sin jugadores','No hay jugadores puede agregarlo en el botón Agregar Jugador de la pantalla principal')
 
