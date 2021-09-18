@@ -34,6 +34,8 @@ class Jugador:
         self.__ganados=pGanados
     def setAcumulado(self,pAcumulado):
         self.__acumulado=pAcumulado
+    def setRetirados(self,pRetirados):
+        self.__retirados=pRetirados
 
     def __str__(self):
         '''()->str devuelve el formato de un objeto Jugador

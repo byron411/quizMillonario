@@ -1,8 +1,9 @@
 #Clase de la interfaz para las preguntas
 from clases.interfaz.DialogoJugar import *
-from PyQt5.QtWidgets import QDialog,QMessageBox
+from PyQt5.QtWidgets import QDialog,QMessageBox,QApplication
 import random
 from clases.mundo.Millonario import *
+import sys
 class InterfazJugar(QDialog):
     def __init__(self,pNombre,pPreguntas,pRespuestas):
         super().__init__()
@@ -21,6 +22,8 @@ class InterfazJugar(QDialog):
         self.ui.btnConfirmar.clicked.connect(self.confirmarRespuesta)
         '''acumulado'''
         self.acumulado=0
+        '''retirarse'''
+        self.ui.btnRetirarse.clicked.connect(self.retirarse)
 
 
     def cargarPregunta(self):
@@ -183,3 +186,13 @@ class InterfazJugar(QDialog):
                 QMessageBox.critical(self,'Incorrecto','Ha perdido su acumulado')
                 jugador=princi.buscarJugadorPorNombre(self.nombre)
                 princi.actualizarYouLost(jugador)
+    def retirarse(self):
+        if self.acumulado>0:
+            self.msg=QMessageBox.question(self,'Seguro?',
+                                          '¿Retirarse con acumula 111?',
+                                          QMessageBox.Yes | QMessageBox.No)
+            if self.msg==QMessageBox.Yes:
+                princi=Millonario()
+                jugador=princi.buscarJugadorPorNombre(self.nombre)
+                princi.actualizarYouDraw(jugador,self.acumulado)
+                print('salir')

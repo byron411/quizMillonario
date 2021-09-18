@@ -138,6 +138,16 @@ class Millonario:
         miCursor.execute('update jugador set acumulado=?,jugados=?,ganados=? where id=?',(total,pJugador.darJugados(),pJugador.darGanados(),pJugador.darId()))
         miConexion.commit()
         miConexion.close()
+    def actualizarYouDraw(self,pJugador,pAcumulado):
+        pJugador.setJugados(pJugador.darJugados() + 1)
+        total = pAcumulado + pJugador.darAcumulado()
+        pJugador.setAcumulado(total)
+        pJugador.setRetirados(pJugador.darRetirados()+1)
+        miConexion=sqlite3.connect('../../data/bd/millonario.db')
+        miCursor=miConexion.cursor()
+        miCursor.execute('update jugador set acumulado=?, jugados=?,retirados=? where id=?',(total,pJugador.darJugados(),pJugador.darRetirados(),pJugador.darId()))
+        miConexion.commit()
+        miConexion.close()
     def buscarJugadorPorNombre(self,pNombre):
         i=0
         encontrado=False
