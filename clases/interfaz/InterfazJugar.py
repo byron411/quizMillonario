@@ -18,6 +18,8 @@ class InterfazJugar(QDialog):
         self.respuestas=pRespuestas
         '''confirmar'''
         self.ui.btnConfirmar.clicked.connect(self.confirmarRespuesta)
+        '''acumulado'''
+        self.acumulado=0
 
     def cargarPregunta(self):
         preguntasBasicas=[]
@@ -36,6 +38,10 @@ class InterfazJugar(QDialog):
             self.cargarRespuesta(idRespuesta)
 
         elif self.nivel==2:
+            self.ui.lblNumero.setText("<html><head/><body><p><span style=\" font-weight:600; color:#aa0000;\">2</span></p></body></html>")
+            self.ui.lblValor.setText("<html><head/><body><p><span style=\" font-weight:600; color:#aa0000;\">"+str('${:,.2f}'.format(Categoria.MEDIO_BAJO.value))+"</span></p></body></html>")
+            self.acumulado=Categoria.BAJO.value
+            self.ui.lblAcumulado.setText("<html><head/><body><p><span style=\" font-weight:600; color:#aa0000;\">"+str('${:,.2f}'.format(self.acumulado))+"</span></p></body></html>")
             preguntas_medio_bajo = []
             for j in range(len(self.preguntas)):
                 if self.preguntas[j].darCategoria()=='medio_bajo':
@@ -50,6 +56,10 @@ class InterfazJugar(QDialog):
             self.cargarRespuesta(idRespuesta2)
 
         elif self.nivel==3:
+            self.ui.lblNumero.setText("<html><head/><body><p><span style=\" font-weight:600; color:#aa0000;\">3</span></p></body></html>")
+            self.ui.lblValor.setText("<html><head/><body><p><span style=\" font-weight:600; color:#aa0000;\">"+str('${:,.2f}'.format(Categoria.MEDIO.value))+"</span></p></body></html>")
+            self.acumulado += Categoria.MEDIO_BAJO.value
+            self.ui.lblAcumulado.setText("<html><head/><body><p><span style=\" font-weight:600; color:#aa0000;\">"+str('${:,.2f}'.format(self.acumulado))+"</span></p></body></html>")
             preguntas_medias = []
             for k in range(len(self.preguntas)):
                 if self.preguntas[k].darCategoria()=='medio':
@@ -64,6 +74,10 @@ class InterfazJugar(QDialog):
             self.cargarRespuesta(idRespuesta3)
 
         elif self.nivel==4:
+            self.ui.lblNumero.setText("<html><head/><body><p><span style=\" font-weight:600; color:#aa0000;\">4</span></p></body></html>")
+            self.ui.lblValor.setText("<html><head/><body><p><span style=\" font-weight:600; color:#aa0000;\">"+str('${:,.2f}'.format(Categoria.MEDIO_ALTO.value))+"</span></p></body></html>")
+            self.acumulado+=Categoria.MEDIO.value
+            self.ui.lblAcumulado.setText("<html><head/><body><p><span style=\" font-weight:600; color:#aa0000;\">"+str('${:,.2f}'.format(self.acumulado))+"</span></p></body></html>")
             preguntas_medias_altas = []
             for h in range(len(self.preguntas)):
                 if self.preguntas[h].darCategoria()=='medio_alto':
@@ -78,6 +92,11 @@ class InterfazJugar(QDialog):
             self.cargarRespuesta(idRespuesta4)
 
         elif self.nivel==5:
+            self.ui.lblNumero.setText("<html><head/><body><p><span style=\" font-weight:600; color:#aa0000;\">5</span></p></body></html>")
+            self.ui.lblValor.setText("<html><head/><body><p><span style=\" font-weight:600; color:#aa0000;\">"+str('${:,.2f}'.format(Categoria.ALTO.value))+"</span></p></body></html>")
+            self.acumulado+=Categoria.MEDIO_ALTO.value
+            self.ui.lblAcumulado.setText("<html><head/><body><p><span style=\" font-weight:600; color:#aa0000;\">"+str('${:,.2f}'.format(self.acumulado))+"</span></p></body></html>")
+
             preguntas_altas=[]
             for t in range(len(self.preguntas)):
                 if self.preguntas[t].darCategoria()=='alto':
@@ -90,7 +109,6 @@ class InterfazJugar(QDialog):
                                     margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#00aa00;\">" + str(pregunta5) + "</span></p></body></html>")
             idRespuesta5 = preguntas_altas[aleatorio5].darIdRespuesta()
             self.cargarRespuesta(idRespuesta5)
-
 
 
     def cargarRespuesta(self,pRespuesta):
@@ -145,8 +163,16 @@ class InterfazJugar(QDialog):
             idRespuestaSeleccionada=respuestaRecibida.darId()
             preguntaRecibida=princi.buscarPreguntaPorIdRespuesta(idRespuestaSeleccionada)
             if preguntaRecibida!=None:
-                QMessageBox.information(self,'Correcto','Es correcto pasa al siguiente nivel')
+
                 self.nivel+=1
-                self.cargarPregunta()
+
+                if self.nivel>5:
+                    self.acumulado += Categoria.ALTO.value
+                    self.ui.lblAcumulado.setText("<html><head/><body><p><span style=\" font-weight:600; color:#aa0000;\">"+str('${:,.2f}'.format(self.acumulado))+"</span></p></body></html>")
+                    QMessageBox.information(self,'Victoria','¡Ganaste el juego! Acumulado: '+str('${:,.2f}'.format(self.acumulado)))
+
+                else:
+                    QMessageBox.information(self, 'Correcto', 'Es correcto pasa al siguiente nivel')
+                    self.cargarPregunta()
             else:
                 QMessageBox.critical(self,'Incorrecto','Ha perdido su acumulado')
