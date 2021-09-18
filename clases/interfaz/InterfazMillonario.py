@@ -2,6 +2,7 @@
 from clases.interfaz.PanelMillonario import *
 from PyQt5.QtWidgets import QMainWindow,QApplication,QInputDialog,QMessageBox
 from clases.mundo.Millonario import *
+from clases.interfaz.InterfazJugar import *
 import sys
 
 class InterfazMillonario(QMainWindow):
@@ -20,6 +21,10 @@ class InterfazMillonario(QMainWindow):
         '''Selección de socios con mouse'''
         self.ui.listWidgetJugadores.itemClicked.connect(self.mostrarJugadorActual)
         self.ui.listWidgetJugadores.itemSelectionChanged.connect(self.mostrarJugadorActual)
+        '''boton ¡Jugar!'''
+        self.ui.btnJugar.clicked.connect(self.jugar)
+        '''instancia al dialogo pregunta'''
+        self.dialogoJugar=InterfazJugar()
     def cargarJugadores(self):
         '''Carga los jugadores de la base de datos en el widget
         @:except Lanza una excepción si no logra encontrar jugadores'''
@@ -62,6 +67,8 @@ class InterfazMillonario(QMainWindow):
             self.ui.txtGanados.setText(str(self.jugadores[item].darGanados()))
             self.ui.txtPerdidos.setText(str(self.jugadores[item].darPerdidos()))
             self.ui.txtRetirados.setText(str(self.jugadores[item].darRetirados()))
+    def jugar(self):
+        self.dialogoJugar.exec()
 
 
 app=QApplication([])
