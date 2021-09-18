@@ -1,14 +1,21 @@
 #Clase principal del juego quizMillonario
 from clases.mundo.Jugador import *
+from clases.mundo.Pregunta import *
 import sqlite3
 class Millonario:
     def __init__(self):
         '''Método constructor de la clase Millonario'''
         self.__jugadores=[]
         self.cargarJugadores()
+        '''cargar preguntas'''
+        self.__preguntas = []
+        self.cargarPreguntas()
+
     #Métodos getters
     def darJugadores(self):
         return self.__jugadores
+    def darPreguntas(self):
+        return self.__preguntas
     #Métodos
     def cargarJugadores(self):
         '''()->void Carga los jugadores existentes en la base de datos y los carga en un array
@@ -46,5 +53,17 @@ class Millonario:
             self.__jugadores.append(Jugador(pId,pNombre,0,0,0,0,0))
         except Exception as e:
             raise Exception('Ha ocurrido un error: '+str(e))
+    def cargarPreguntas(self):
+        miConexion=sqlite3.connect('../../data/bd/millonario.db')
+        miCursor=miConexion.cursor()
+        miCursor.execute('select * from pregunta')
+        recibidas=miCursor.fetchall()
+        #print(len(recibidas))
+        miConexion.close()
+        for i in range(len(recibidas)):
+            pregunta=Pregunta(recibidas[i][0],recibidas[i][1],recibidas[i][2],recibidas[i][3])
+            self.__preguntas.append(pregunta)
+
 #princial=Millonario()
 #princial.cargarJugadores()
+#princial.cargarPreguntas()

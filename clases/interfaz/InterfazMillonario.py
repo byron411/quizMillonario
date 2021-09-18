@@ -23,8 +23,9 @@ class InterfazMillonario(QMainWindow):
         self.ui.listWidgetJugadores.itemSelectionChanged.connect(self.mostrarJugadorActual)
         '''boton ¡Jugar!'''
         self.ui.btnJugar.clicked.connect(self.jugar)
-        '''instancia al dialogo pregunta'''
-        self.dialogoJugar=InterfazJugar()
+        '''preguntas'''
+        self.preguntas=self.principal.darPreguntas()
+
     def cargarJugadores(self):
         '''Carga los jugadores de la base de datos en el widget
         @:except Lanza una excepción si no logra encontrar jugadores'''
@@ -68,7 +69,13 @@ class InterfazMillonario(QMainWindow):
             self.ui.txtPerdidos.setText(str(self.jugadores[item].darPerdidos()))
             self.ui.txtRetirados.setText(str(self.jugadores[item].darRetirados()))
     def jugar(self):
-        self.dialogoJugar.exec()
+        item=self.ui.listWidgetJugadores.currentRow()
+        if item>=0:
+            nombre=self.jugadores[item].darNombre()
+            dialogoJugar=InterfazJugar(nombre,self.preguntas)
+            dialogoJugar.exec()
+        else:
+            QMessageBox.warning(self,'Sin jugadores','No hay jugadores puede agregarlo en el botón Agregar Jugador de la pantalla principal')
 
 
 app=QApplication([])
