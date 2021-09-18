@@ -1,6 +1,7 @@
 #Clase principal del juego quizMillonario
 from clases.mundo.Jugador import *
 from clases.mundo.Pregunta import *
+from clases.mundo.Respuesta import *
 import sqlite3
 class Millonario:
     def __init__(self):
@@ -10,12 +11,17 @@ class Millonario:
         '''cargar preguntas'''
         self.__preguntas = []
         self.cargarPreguntas()
+        '''cargar respuestas'''
+        self.__respuestas=[]
+        self.cargarRespuestas()
 
     #Métodos getters
     def darJugadores(self):
         return self.__jugadores
     def darPreguntas(self):
         return self.__preguntas
+    def darRespuestas(self):
+        return self.__respuestas
     #Métodos
     def cargarJugadores(self):
         '''()->void Carga los jugadores existentes en la base de datos y los carga en un array
@@ -54,16 +60,47 @@ class Millonario:
         except Exception as e:
             raise Exception('Ha ocurrido un error: '+str(e))
     def cargarPreguntas(self):
+        try:
+            miConexion=sqlite3.connect('../../data/bd/millonario.db')
+            miCursor=miConexion.cursor()
+            miCursor.execute('select * from pregunta')
+            recibidas=miCursor.fetchall()
+            #print(len(recibidas))
+            miConexion.close()
+            for i in range(len(recibidas)):
+                pregunta=Pregunta(recibidas[i][0],recibidas[i][1],recibidas[i][2],recibidas[i][3])
+                self.__preguntas.append(pregunta)
+        except Exception as e:
+            pass
+    def cargarRespuestas(self):
         miConexion=sqlite3.connect('../../data/bd/millonario.db')
         miCursor=miConexion.cursor()
-        miCursor.execute('select * from pregunta')
-        recibidas=miCursor.fetchall()
-        #print(len(recibidas))
+        miCursor.execute('select * from respuesta')
+        resRecibidas=miCursor.fetchall()
         miConexion.close()
-        for i in range(len(recibidas)):
-            pregunta=Pregunta(recibidas[i][0],recibidas[i][1],recibidas[i][2],recibidas[i][3])
-            self.__preguntas.append(pregunta)
+        for i in range(len(resRecibidas)):
+            respuesta=Respuesta(resRecibidas[i][0],resRecibidas[i][1],resRecibidas[i][2])
+            self.__respuestas.append(respuesta)
+
+    def buscarRespuestaPorId(self,pId):
+        encontrado=False
+        respuesta=None
+        i=0
+        while i< len(self.__respuestas) and not encontrado:
+            if self.__respuestas[i].darId()==pId:
+                encontrado=True
+                respuesta=self.__respuestas[i]
+            i+=1
+        return respuesta
+    def buscarRespuestaPorTipo(self,pTipo):
+        respuestasPorTipo=[]
+        for i in range(len(self.__respuestas)):
+            tipo=self.__respuestas[i].darTipo()
+            if tipo==pTipo:
+                respuestasPorTipo.append(self.__respuestas[i])
+        return respuestasPorTipo
 
 #princial=Millonario()
 #princial.cargarJugadores()
 #princial.cargarPreguntas()
+#princial.cargarRespuestas()
