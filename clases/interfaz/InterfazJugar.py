@@ -1,8 +1,7 @@
 #Clase de la interfaz para las preguntas
 from clases.interfaz.DialogoJugar import *
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog,QMessageBox
 import random
-import sqlite3
 from clases.mundo.Millonario import *
 class InterfazJugar(QDialog):
     def __init__(self,pNombre,pPreguntas,pRespuestas):
@@ -17,7 +16,8 @@ class InterfazJugar(QDialog):
         #print(len(self.respuestas))
         self.cargarPregunta()
         self.respuestas=pRespuestas
-
+        '''confirmar'''
+        self.ui.btnConfirmar.clicked.connect(self.confirmarRespuesta)
 
     def cargarPregunta(self):
         preguntasBasicas=[]
@@ -71,3 +71,25 @@ class InterfazJugar(QDialog):
             self.ui.rbtnB.setText(str(respuestasPorTipo[1]))
             self.ui.rbtnC.setText(str(respuestasPorTipo[2]))
             self.ui.rbtnD.setText(str(respuesta))
+    def confirmarRespuesta(self):
+        respuesta=''
+        princi=Millonario()
+        if self.ui.rbtnA.isChecked():
+            respuesta=self.ui.rbtnA.text()
+        elif self.ui.rbtnB.isChecked():
+            respuesta=self.ui.rbtnB.text()
+        elif self.ui.rbtnC.isChecked():
+            respuesta=self.ui.rbtnC.text()
+        elif self.ui.rbtnD.isChecked():
+            respuesta=self.ui.rbtnD.text()
+        else:
+            QMessageBox.warning(self,'Información','Debe seleccionar una respuesta')
+        respuestaRecibida=princi.buscarRespuestaPorDescripcion(respuesta)
+
+        if respuestaRecibida!=None:
+            idRespuestaSeleccionada=respuestaRecibida.darId()
+            preguntaRecibida=princi.buscarPreguntaPorIdRespuesta(idRespuestaSeleccionada)
+            if preguntaRecibida!=None:
+                QMessageBox.information(self,'Correcto','Es correcto pasa al siguiente nivel')
+            else:
+                QMessageBox.critical(self,'Incorrecto','Ha perdido su acumulado')

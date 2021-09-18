@@ -99,7 +99,26 @@ class Millonario:
             if tipo==pTipo:
                 respuestasPorTipo.append(self.__respuestas[i])
         return respuestasPorTipo
-
+    def buscarRespuestaPorDescripcion(self,pDescripcion):
+        encontrado=False
+        i=0
+        respuesta=None
+        while i< len(self.__respuestas) and not encontrado:
+            if self.__respuestas[i].darDescripcion()==pDescripcion:
+                encontrado=True
+                respuesta=self.__respuestas[i]
+            i+=1
+        return respuesta
+    def buscarPreguntaPorIdRespuesta(self,pIdRespuesta):
+        encontrado = False
+        i = 0
+        pregunta = None
+        while i < len(self.__preguntas) and not encontrado:
+            if self.__preguntas[i].darIdRespuesta() == pIdRespuesta:
+                encontrado = True
+                pregunta = self.__preguntas[i]
+            i += 1
+        return pregunta
 #princial=Millonario()
 #princial.cargarJugadores()
 #princial.cargarPreguntas()
