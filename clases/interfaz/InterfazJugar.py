@@ -189,11 +189,15 @@ class InterfazJugar(QDialog):
                 QDialog.close(self)
     def retirarse(self):
         if self.acumulado>0:
-            self.msg=QMessageBox.question(self,'Seguro?','¿Desea retirarse con acumulado actual: ?'+str('${:,.2f}'.format(self.acumulado)),QMessageBox.Yes | QMessageBox.No)
+            self.msg=QMessageBox.question(self,'Seguro?','¿Desea retirarse con acumulado actual? Acumulado: '+str('${:,.2f}'.format(self.acumulado)),QMessageBox.Yes | QMessageBox.No)
             if self.msg==QMessageBox.Yes:
                 princi=Millonario()
                 jugador=princi.buscarJugadorPorNombre(self.nombre)
                 princi.actualizarYouDraw(jugador,self.acumulado)
+                QDialog.close(self)
+        elif self.acumulado==0:
+            self.msg = QMessageBox.question(self,'Salir','Con acumulado 0 se cancela la partida ¿salir?',QMessageBox.Yes | QMessageBox.No)
+            if self.msg == QMessageBox.Yes:
                 QDialog.close(self)
         else:
             QDialog.close(self)

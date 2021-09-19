@@ -29,6 +29,7 @@ class InterfazMillonario(QMainWindow):
         self.respuestas=self.principal.darRespuestas()
         #print(len(self.respuestas))
         #self.ui.actionModificar_jugador_seleccionado.triggered.connect(self.refrescarGroupBox)
+        self.ui.btnRefrescar.clicked.connect(self.refrescarGroupBox)
 
     def cargarJugadores(self):
         '''Carga los jugadores de la base de datos en el widget
