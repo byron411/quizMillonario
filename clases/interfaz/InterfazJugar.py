@@ -201,3 +201,11 @@ class InterfazJugar(QDialog):
                 QDialog.close(self)
         else:
             QDialog.close(self)
+    '''def closeEvent(self, event):
+        self.msg = QMessageBox.question(self, 'Confirmación',
+                                        '¿Cancelar juego?',
+                                        QMessageBox.Yes | QMessageBox.No)
+        if self.msg == QMessageBox.Yes:
+            QDialog.close(self)
+        else:
+            event.ignore()'''

@@ -29,6 +29,7 @@ class InterfazMillonario(QMainWindow):
         self.respuestas=self.principal.darRespuestas()
         #print(len(self.respuestas))
         #self.ui.actionModificar_jugador_seleccionado.triggered.connect(self.refrescarGroupBox)
+        self.ui.actionSalir.triggered.connect(self.salir)
         self.ui.btnRefrescar.clicked.connect(self.refrescarGroupBox)
 
     def cargarJugadores(self):
@@ -97,6 +98,12 @@ class InterfazMillonario(QMainWindow):
             self.ui.txtPerdidos.setText(str(lista[item].darPerdidos()))
             self.ui.txtRetirados.setText(str(lista[item].darRetirados()))
 
+    def salir(self):
+        self.msg = QMessageBox.question(self, 'Confirmación',
+                                                  '¿Desea salir?',
+                                                  QMessageBox.Yes | QMessageBox.No)
+        if self.msg == QMessageBox.Yes:
+            sys.exit(app.exec())
 
 app=QApplication([])
 aplication=InterfazMillonario()
