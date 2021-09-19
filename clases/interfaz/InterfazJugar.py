@@ -3,7 +3,6 @@ from clases.interfaz.DialogoJugar import *
 from PyQt5.QtWidgets import QDialog,QMessageBox,QApplication
 import random
 from clases.mundo.Millonario import *
-import sys
 class InterfazJugar(QDialog):
     def __init__(self,pNombre,pPreguntas,pRespuestas):
         super().__init__()
@@ -28,7 +27,10 @@ class InterfazJugar(QDialog):
         self.ui.btnRetirarse.clicked.connect(self.retirarse)
         '''boton 50/50'''
         self.ui.btn5050.clicked.connect(self.boton5050)
-
+        '''botón ayuda del público'''
+        self.ui.btnPublico.clicked.connect(self.ayudaPublico)
+        '''llamada a un amigo'''
+        self.ui.btnLlamada.clicked.connect(self.llamadaAmigo)
     def cargarPregunta(self):
         preguntasBasicas=[]
         if self.nivel==1:
@@ -266,3 +268,19 @@ class InterfazJugar(QDialog):
                 radios[i].setText('')
             cont+=1
         self.ui.btn5050.setDisabled(True)
+    def ayudaPublico(self):
+        correcta=self.darRespuestaCorrecta()
+        self.ui.scrollArea.setVisible(True)
+        aleatorio=random.randint(70,90)
+        self.ui.ayudaprogress.setValue(aleatorio)
+        self.ui.lblAyuda.setText(str(aleatorio)+'% del público eligio '+str(correcta)+' como respuesta correcta')
+        self.ui.btnPublico.setDisabled(True)
+    def llamadaAmigo(self):
+        correcta=self.darRespuestaCorrecta()
+        self.ui.scrollArea.setVisible(True)
+        self.ui.ayudaprogress.setValue(0)
+        princi=Millonario()
+        respuesta=princi.buscarRespuestaPorDescripcion(correcta)
+        if respuesta!=None:
+            self.ui.lblAyuda.setText('Tu amigo experto en '+respuesta.darTipo().capitalize()+' te recominda responder '+correcta)
+        self.ui.btnLlamada.setDisabled(True)
