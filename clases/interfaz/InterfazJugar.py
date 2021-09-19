@@ -10,6 +10,8 @@ class InterfazJugar(QDialog):
         self.ui=Ui_Dialog()
         self.ui.setupUi(self)
         self.nombre=pNombre
+        '''ocultar scroll area'''
+        self.ui.scrollArea.setVisible(False)
         '''Cargar nombre de jugador'''
         self.ui.lblNombre.setText('< html > < head / > < body > < p > < span style =\" font-size:12pt; font-weight:600; font-style:italic; color:#005500;\">'+pNombre+'</span></p></body></html>')
         self.nivel=1
@@ -24,7 +26,8 @@ class InterfazJugar(QDialog):
         self.acumulado=0
         '''retirarse'''
         self.ui.btnRetirarse.clicked.connect(self.retirarse)
-
+        '''boton 50/50'''
+        self.ui.btn5050.clicked.connect(self.boton5050)
 
     def cargarPregunta(self):
         preguntasBasicas=[]
@@ -187,6 +190,7 @@ class InterfazJugar(QDialog):
                 jugador=princi.buscarJugadorPorNombre(self.nombre)
                 princi.actualizarYouLost(jugador)
                 QDialog.close(self)
+
     def retirarse(self):
         if self.acumulado>0:
             self.msg=QMessageBox.question(self,'Seguro?','¿Desea retirarse con acumulado actual? Acumulado: '+str('${:,.2f}'.format(self.acumulado)),QMessageBox.Yes | QMessageBox.No)
@@ -209,3 +213,56 @@ class InterfazJugar(QDialog):
             QDialog.close(self)
         else:
             event.ignore()'''
+    def darRespuestaCorrecta(self):
+        '''()-> str. Da la respuesta correcta de las 4 opciones
+        @:return respuestaCorrecta'''
+        respuestaCorrecta=''
+        a=self.ui.rbtnA.text()
+        b=self.ui.rbtnB.text()
+        c = self.ui.rbtnC.text()
+        d = self.ui.rbtnD.text()
+        princi=Millonario()
+        respuestaA=princi.buscarRespuestaPorDescripcion(a)
+        if respuestaA!=None:
+            idRespuesta=respuestaA.darId()
+            pregunta=princi.buscarPreguntaPorIdRespuesta(idRespuesta)
+            if pregunta!=None:
+                if pregunta.darIdRespuesta()==idRespuesta:
+                    respuestaCorrecta=self.ui.rbtnA.text()
+        respuestaB = princi.buscarRespuestaPorDescripcion(b)
+        if respuestaB != None:
+            idRespuesta = respuestaB.darId()
+            pregunta = princi.buscarPreguntaPorIdRespuesta(idRespuesta)
+            if pregunta != None:
+                if pregunta.darIdRespuesta() == idRespuesta:
+                    respuestaCorrecta = self.ui.rbtnB.text()
+        respuestaC = princi.buscarRespuestaPorDescripcion(c)
+        if respuestaC != None:
+            idRespuesta = respuestaC.darId()
+            pregunta = princi.buscarPreguntaPorIdRespuesta(idRespuesta)
+            if pregunta != None:
+                if pregunta.darIdRespuesta() == idRespuesta:
+                    respuestaCorrecta = self.ui.rbtnC.text()
+        respuestaD = princi.buscarRespuestaPorDescripcion(d)
+        if respuestaD != None:
+            idRespuesta = respuestaD.darId()
+            pregunta = princi.buscarPreguntaPorIdRespuesta(idRespuesta)
+            if pregunta != None:
+                if pregunta.darIdRespuesta() == idRespuesta:
+                    respuestaCorrecta = self.ui.rbtnD.text()
+        return respuestaCorrecta
+
+    def boton5050(self):
+        correcta=self.darRespuestaCorrecta()
+        radios=[
+        self.ui.rbtnA,
+        self.ui.rbtnB,
+        self.ui.rbtnC,
+        self.ui.rbtnD,
+        ]
+        cont=0
+        for i in range(len(radios)):
+            if radios[i].text()!=correcta and cont<3:
+                radios[i].setText('')
+            cont+=1
+        self.ui.btn5050.setDisabled(True)
