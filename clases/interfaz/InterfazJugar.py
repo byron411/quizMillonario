@@ -177,7 +177,7 @@ class InterfazJugar(QDialog):
                     QMessageBox.information(self,'Victoria','¡Ganaste el juego! Acumulado: '+str('${:,.2f}'.format(self.acumulado)))
                     jugador=princi.buscarJugadorPorNombre(self.nombre)
                     princi.actualizarYouWin(jugador,self.acumulado)
-
+                    QDialog.close(self)
                 else:
                     QMessageBox.information(self, 'Correcto', 'Es correcto pasa al siguiente nivel')
                     self.cargarPregunta()
@@ -186,11 +186,10 @@ class InterfazJugar(QDialog):
                 QMessageBox.critical(self,'Incorrecto','Ha perdido su acumulado')
                 jugador=princi.buscarJugadorPorNombre(self.nombre)
                 princi.actualizarYouLost(jugador)
+                QDialog.close(self)
     def retirarse(self):
         if self.acumulado>0:
-            self.msg=QMessageBox.question(self,'Seguro?',
-                                          '¿Retirarse con acumula 111?',
-                                          QMessageBox.Yes | QMessageBox.No)
+            self.msg=QMessageBox.question(self,'Seguro?','¿Desea retirarse con acumulado actual: ?'+str('${:,.2f}'.format(self.acumulado)),QMessageBox.Yes | QMessageBox.No)
             if self.msg==QMessageBox.Yes:
                 princi=Millonario()
                 jugador=princi.buscarJugadorPorNombre(self.nombre)
