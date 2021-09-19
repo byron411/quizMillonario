@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMainWindow,QApplication,QInputDialog
 #from clases.mundo.Millonario import *
 from clases.interfaz.InterfazJugar import *
 import sys
-
+import sqlite3
 class InterfazMillonario(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -19,8 +19,8 @@ class InterfazMillonario(QMainWindow):
         '''botones'''
         self.ui.btnAgregar.clicked.connect(self.agregarJugador)
         '''Selección de socios con mouse'''
-        self.ui.listWidgetJugadores.itemClicked.connect(self.mostrarJugadorActual)
-        self.ui.listWidgetJugadores.itemSelectionChanged.connect(self.mostrarJugadorActual)
+        self.ui.listWidgetJugadores.itemClicked.connect(self.refrescarGroupBox)
+        self.ui.listWidgetJugadores.itemSelectionChanged.connect(self.refrescarGroupBox)
         '''boton ¡Jugar!'''
         self.ui.btnJugar.clicked.connect(self.jugar)
         '''preguntas'''
@@ -28,6 +28,7 @@ class InterfazMillonario(QMainWindow):
         '''respuestas'''
         self.respuestas=self.principal.darRespuestas()
         #print(len(self.respuestas))
+        #self.ui.actionModificar_jugador_seleccionado.triggered.connect(self.refrescarGroupBox)
 
     def cargarJugadores(self):
         '''Carga los jugadores de la base de datos en el widget
@@ -62,7 +63,7 @@ class InterfazMillonario(QMainWindow):
             self.ui.listWidgetJugadores.addItem(str(self.jugadores[i]))
         self.ui.listWidgetJugadores.setCurrentRow(i)
     def mostrarJugadorActual(self):
-        '''Muestra la información del jugador actual en el groupBox Jugador actual'''
+
         if len(self.jugadores)>0:
             item=self.ui.listWidgetJugadores.currentRow()
             self.ui.txtNombre.setText(self.jugadores[item].darNombre())
@@ -81,6 +82,19 @@ class InterfazMillonario(QMainWindow):
 
         else:
             QMessageBox.warning(self,'Sin jugadores','No hay jugadores puede agregarlo en el botón Agregar Jugador de la pantalla principal')
+
+    def refrescarGroupBox(self):
+        '''Muestra la información del jugador actual en el groupBox Jugador actual'''
+        pri=Millonario()
+        lista=pri.darJugadores()
+        if len(lista)>0:
+            item=self.ui.listWidgetJugadores.currentRow()
+            self.ui.txtNombre.setText(lista[item].darNombre())
+            self.ui.txtAcumulado.setText(str('${:,.2f}'.format(lista[item].darAcumulado())))
+            self.ui.txtJugados.setText(str(lista[item].darJugados()))
+            self.ui.txtGanados.setText(str(lista[item].darGanados()))
+            self.ui.txtPerdidos.setText(str(lista[item].darPerdidos()))
+            self.ui.txtRetirados.setText(str(lista[item].darRetirados()))
 
 
 app=QApplication([])

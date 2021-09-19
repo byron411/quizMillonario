@@ -195,6 +195,6 @@ class InterfazJugar(QDialog):
                 princi=Millonario()
                 jugador=princi.buscarJugadorPorNombre(self.nombre)
                 princi.actualizarYouDraw(jugador,self.acumulado)
-                #QDialog.close()
+                QDialog.close(self)
         else:
             QDialog.close(self)
