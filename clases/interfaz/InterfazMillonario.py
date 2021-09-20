@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import QMainWindow,QApplication,QInputDialog
 #from clases.mundo.Millonario import *
 from clases.interfaz.InterfazJugar import *
 import sys
-import sqlite3
 class InterfazMillonario(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -27,11 +26,20 @@ class InterfazMillonario(QMainWindow):
         self.preguntas=self.principal.darPreguntas()
         '''respuestas'''
         self.respuestas=self.principal.darRespuestas()
-        #print(len(self.respuestas))
-        #self.ui.actionModificar_jugador_seleccionado.triggered.connect(self.refrescarGroupBox)
+        '''menú salir'''
         self.ui.actionSalir.triggered.connect(self.salir)
+        '''Actualizar group box'''
         self.ui.btnRefrescar.clicked.connect(self.refrescarGroupBox)
-
+        '''menú ayuda'''
+        self.ui.actionInstrucciones.triggered.connect(self.instrucciones)
+        '''menú programador'''
+        self.ui.actionProgramador.triggered.connect(self.programador)
+        '''actualizar jugador'''
+        self.ui.actionModificar_jugador_seleccionado.triggered.connect(self.actualizarJugador)
+        '''eliminar usuario'''
+        self.ui.actionEliminar_jugador_seleccionado.triggered.connect(self.eliminarJugador)
+        '''buscar usuario'''
+        self.ui.actionBuscar_jugador.triggered.connect(self.buscarJugador)
     def cargarJugadores(self):
         '''Carga los jugadores de la base de datos en el widget
         @:except Lanza una excepción si no logra encontrar jugadores'''
@@ -60,9 +68,10 @@ class InterfazMillonario(QMainWindow):
                 QMessageBox.warning(self,'Sin nombre','Debe ingresar un nombre')
     def refrescarJugadores(self):
         '''Actualiza el widget de los jugadores'''
+        jugadores=self.principal.darJugadores()
         self.ui.listWidgetJugadores.clear()
-        for i in range(len(self.jugadores)):
-            self.ui.listWidgetJugadores.addItem(str(self.jugadores[i]))
+        for i in range(len(jugadores)):
+            self.ui.listWidgetJugadores.addItem(str(jugadores[i].darNombre()))
         self.ui.listWidgetJugadores.setCurrentRow(i)
     def mostrarJugadorActual(self):
 
@@ -91,19 +100,86 @@ class InterfazMillonario(QMainWindow):
         lista=pri.darJugadores()
         if len(lista)>0:
             item=self.ui.listWidgetJugadores.currentRow()
-            self.ui.txtNombre.setText(lista[item].darNombre())
-            self.ui.txtAcumulado.setText(str('${:,.2f}'.format(lista[item].darAcumulado())))
-            self.ui.txtJugados.setText(str(lista[item].darJugados()))
-            self.ui.txtGanados.setText(str(lista[item].darGanados()))
-            self.ui.txtPerdidos.setText(str(lista[item].darPerdidos()))
-            self.ui.txtRetirados.setText(str(lista[item].darRetirados()))
-
+            try:
+                self.ui.txtNombre.setText(lista[item].darNombre())
+                self.ui.txtAcumulado.setText(str('${:,.2f}'.format(lista[item].darAcumulado())))
+                self.ui.txtJugados.setText(str(lista[item].darJugados()))
+                self.ui.txtGanados.setText(str(lista[item].darGanados()))
+                self.ui.txtPerdidos.setText(str(lista[item].darPerdidos()))
+                self.ui.txtRetirados.setText(str(lista[item].darRetirados()))
+            except Exception as e:
+                pass
     def salir(self):
         self.msg = QMessageBox.question(self, 'Confirmación',
                                                   '¿Desea salir?',
                                                   QMessageBox.Yes | QMessageBox.No)
         if self.msg == QMessageBox.Yes:
             sys.exit(app.exec())
+    def instrucciones(self):
+        '''Muestra un mensaje de instrucciones'''
+        QMessageBox.information(self,'Instrucciones','Agregue un jugador y presione el botón jugar.\n'
+        'Responda 5 preguntas cada una con un valor diferente.\nCuenta con 3 ayudas solo se utilizan una vez.\n'
+        'Si se retira despues de la primera pregunta conserva su acumulado.\nSi contesta mal perderá su acumulado.')
+    def programador(self):
+        '''Muestra un mensaje de la persona que realizó el programa'''
+        QMessageBox.information(self,'Programador','Bayron Trejo\nCel. 3153040495\nEmail. brntrj@gmail.com')
+    def actualizarJugador(self):
+        item=self.ui.listWidgetJugadores.currentRow()
+        if item>=0:
+            nombre,boolenao=QInputDialog.getText(self,'Nuevo nombre','Ingrese el nuevo nombre:')
+            nom=nombre.strip()
+            if boolenao:
+                if nom!='':
+                    try:
+                        pid=self.jugadores[item].darId()
+                        self.principal.actualizarJugador(nom,pid)
+                        self.ui.listWidgetJugadores.clear()
+                        self.refrescarJugadores()
+                        self.mostrarJugadorActual()
+                        self.ui.listWidgetJugadores.setCurrentRow(item)
+                        QMessageBox.information(self,'Actualizado','Se ha actualizado el jugador')
+                    except Exception as e:
+                        QMessageBox.critical(self,'Error','Error actualizando jugador '+str(e))
+                else:
+                    QMessageBox.critical(self,'Error','Debe ingresar un nombre')
+    def eliminarJugador(self):
+        '''elimina un jugador'''
+        item=self.ui.listWidgetJugadores.currentRow()
+        if item>=0:
+            self.msg = QMessageBox.question(self, 'Confirmación',
+                                            '¿Eliminar a '+str(self.jugadores[item].darNombre())+'?',
+                                            QMessageBox.Yes | QMessageBox.No)
+            if self.msg == QMessageBox.Yes:
+                try:
+                    self.principal.eliminarJugador(self.jugadores[item].darId())
+                    self.refrescarJugadores()
+                    self.mostrarJugadorActual()
+                    if len(self.jugadores)>0:
+                        self.ui.listWidgetJugadores.setCurrentRow(0)
+                    else:
+                        pass
+                except Exception as e:
+                    QMessageBox.critical(self,'Error','Error eliminando jugador '+str(e))
+    def buscarJugador(self):
+        '''busca un jugador'''
+        jugadores= len(self.jugadores)
+        if jugadores>=0:
+
+            nombre,booleano=QInputDialog.getText(self,'Buscar','Ingrese nombre:')
+            nom=nombre.strip()
+            if booleano:
+                if nom!='':
+                    jugador=self.principal.buscarJugadorPorNombre(nom)
+                    if jugador!=None:
+                        jugadorpor,posicion=self.principal.buscarJugadorPorId(jugador.darId())
+                        if jugadorpor!=None:
+                            self.ui.listWidgetJugadores.setCurrentRow(posicion)
+                            QMessageBox.information(self,'Encontrado','Jugador '+str(jugadorpor.darNombre()+'esta en la posición '+str(posicion)))
+                    else:
+                        QMessageBox.information(self,'NO esta','No se ha encontrado el jugador')
+                else:
+                    QMessageBox.warning(self,'Error','No ha ingresado un nombre de jugador')
+
 
 app=QApplication([])
 aplication=InterfazMillonario()

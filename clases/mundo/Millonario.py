@@ -6,12 +6,15 @@ import sqlite3
 class Millonario:
     def __init__(self):
         '''Método constructor de la clase Millonario'''
+        #Array jugadores
         self.__jugadores=[]
         self.cargarJugadores()
         '''cargar preguntas'''
+        # Array preguntas
         self.__preguntas = []
         self.cargarPreguntas()
         '''cargar respuestas'''
+        #Array respuestas
         self.__respuestas=[]
         self.cargarRespuestas()
 
@@ -73,6 +76,7 @@ class Millonario:
         except Exception as e:
             pass
     def cargarRespuestas(self):
+        '''()->void. Carga las respuestas de la base de datos y las agrega a un array'''
         miConexion=sqlite3.connect('../../data/bd/millonario.db')
         miCursor=miConexion.cursor()
         miCursor.execute('select * from respuesta')
@@ -158,6 +162,52 @@ class Millonario:
                 jugador=self.__jugadores[i]
             i+=1
         return jugador
+    def actualizarJugador(self,pNombre, pId):
+        '''()-> void. Actualiza un jugador dado el id de jugador
+        @:parameter: pNombre nuevo nombre de jugador
+        @:parameter: pId id del jugador a actualizar nombre
+        @:except: Lanza una excepción si no logra actualizar'''
+        try:
+            miConexion=sqlite3.connect('../../data/bd/millonario.db')
+            miCursor=miConexion.cursor()
+            miCursor.execute('update jugador set nombre=? where id=?',(pNombre,pId))
+            miConexion.commit()
+            miConexion.close()
+            jugador=self.buscarJugadorPorId(pId)
+            if jugador!=None:
+                jugador.setNombre(pNombre)
+        except Exception as e:
+            raise Exception('Hubo un error actualizando jugador: '+str(e))
+    def buscarJugadorPorId(self,pId):
+        '''()->Jugador Busca un jugador dado el id
+        @:parameter pId id del jugador a buscar
+        @:return Jugador devuelve un jugador None en caso contrario
+        @:return posicion del jugador en el array'''
+        i=0
+        encontrado=False
+        jugador=None
+        while i< len(self.__jugadores) and not encontrado:
+            if self.__jugadores[i].darId()==pId:
+                encontrado=True
+                jugador=self.__jugadores[i]
+            i+=1
+        return jugador,i-1
+    def eliminarJugador(self,pId):
+        '''()->void. Elimina un jugador de la base de datos
+        @:parameter pId id del jugador a eliminar
+        @:except Lanza una excepción si no logra eliminar'''
+        try:
+            miConexion = sqlite3.connect('../../data/bd/millonario.db')
+            miCursor = miConexion.cursor()
+            miCursor.execute('delete from jugador where id=?', (pId,))
+            miConexion.commit()
+            miConexion.close()
+            jugador, pos = self.buscarJugadorPorId(pId)
+            self.__jugadores.pop(pos)
+        except Exception as e:
+            raise Exception('Error eliminano: '+str(e))
+
+
 
 
 #princial=Millonario()
