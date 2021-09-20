@@ -63,6 +63,8 @@ class Millonario:
         except Exception as e:
             raise Exception('Ha ocurrido un error: '+str(e))
     def cargarPreguntas(self):
+        '''()->void. Carga las preguntas de la base de datos
+        @:exception lanza una excepción si no encuentra la base de datos'''
         try:
             miConexion=sqlite3.connect('../../data/bd/millonario.db')
             miCursor=miConexion.cursor()
@@ -74,19 +76,26 @@ class Millonario:
                 pregunta=Pregunta(recibidas[i][0],recibidas[i][1],recibidas[i][2],recibidas[i][3])
                 self.__preguntas.append(pregunta)
         except Exception as e:
-            pass
+            print('Error cargando preguntas '+str(e))
     def cargarRespuestas(self):
-        '''()->void. Carga las respuestas de la base de datos y las agrega a un array'''
-        miConexion=sqlite3.connect('../../data/bd/millonario.db')
-        miCursor=miConexion.cursor()
-        miCursor.execute('select * from respuesta')
-        resRecibidas=miCursor.fetchall()
-        miConexion.close()
-        for i in range(len(resRecibidas)):
-            respuesta=Respuesta(resRecibidas[i][0],resRecibidas[i][1],resRecibidas[i][2])
-            self.__respuestas.append(respuesta)
+        '''()->void. Carga las respuestas de la base de datos y las agrega a un array
+        @:exception lanza una excepción si no puede cargar las respuestas'''
+        try:
+            miConexion=sqlite3.connect('../../data/bd/millonario.db')
+            miCursor=miConexion.cursor()
+            miCursor.execute('select * from respuesta')
+            resRecibidas=miCursor.fetchall()
+            miConexion.close()
+            for i in range(len(resRecibidas)):
+                respuesta=Respuesta(resRecibidas[i][0],resRecibidas[i][1],resRecibidas[i][2])
+                self.__respuestas.append(respuesta)
+        except Exception as e:
+            print('error cargando respuestas'+str(e))
 
     def buscarRespuestaPorId(self,pId):
+        '''()->Respuesta Busca una respuesta dado el id
+                @:parameter pId id de respuesta a buscar
+                @:return Respuesta devuelve una Respuesta, None en caso contrario'''
         encontrado=False
         respuesta=None
         i=0
@@ -97,6 +106,9 @@ class Millonario:
             i+=1
         return respuesta
     def buscarRespuestaPorTipo(self,pTipo):
+        '''()->Respuesta Busca una respuesta dado el ipo
+        @:parameter pTipo tipo de respuesta a buscar
+        @:return Respuesta devuelve una Respuesta, None en caso contrario'''
         respuestasPorTipo=[]
         for i in range(len(self.__respuestas)):
             tipo=self.__respuestas[i].darTipo()
@@ -104,6 +116,9 @@ class Millonario:
                 respuestasPorTipo.append(self.__respuestas[i])
         return respuestasPorTipo
     def buscarRespuestaPorDescripcion(self,pDescripcion):
+        '''()->Respuesta Busca una respuesta dada la descripción
+            @:parameter pDescripcion descripcion de respuesta a buscar
+            @:return Respuesta devuelve una Respuesta, None en caso contrario'''
         encontrado=False
         i=0
         respuesta=None
@@ -114,6 +129,9 @@ class Millonario:
             i+=1
         return respuesta
     def buscarPreguntaPorIdRespuesta(self,pIdRespuesta):
+        '''()->Pregunta Busca una pregunta dado el id de respuesta
+        @:parameter pIdRespuesta id de respuesta
+        @:return Pregunta devuelve una Respuesta, None en caso contrario'''
         encontrado = False
         i = 0
         pregunta = None
@@ -124,35 +142,56 @@ class Millonario:
             i += 1
         return pregunta
     def actualizarYouLost(self, pJugador):
+        '''()-void. actualiza jugados y perdidos de un jugador
+        @:parameter pJugador Jugador al que se le debe actualizar los perdidos'''
+
         pJugador.setJugados(pJugador.darJugados()+1)
         pJugador.setPerdidos(pJugador.darPerdidos()+1)
-        miConexion=sqlite3.connect('../../data/bd/millonario.db')
-        miCursor=miConexion.cursor()
-        miCursor.execute('update jugador set jugados=?,perdidos=? where id=?',(pJugador.darJugados(),pJugador.darPerdidos(),pJugador.darId()))
-        miConexion.commit()
-        miConexion.close()
+        try:
+            miConexion=sqlite3.connect('../../data/bd/millonario.db')
+            miCursor=miConexion.cursor()
+            miCursor.execute('update jugador set jugados=?,perdidos=? where id=?',(pJugador.darJugados(),pJugador.darPerdidos(),pJugador.darId()))
+            miConexion.commit()
+            miConexion.close()
+        except Exception as e:
+            print('error actualizando yourlost'+str(e))
 
     def actualizarYouWin(self, pJugador, pAcumulado):
-        pJugador.setJugados(pJugador.darJugados()+1)
-        pJugador.setGanados(pJugador.darGanados() + 1)
-        total=pAcumulado+pJugador.darAcumulado()
-        pJugador.setAcumulado(total)
-        miConexion=sqlite3.connect('../../data/bd/millonario.db')
-        miCursor=miConexion.cursor()
-        miCursor.execute('update jugador set acumulado=?,jugados=?,ganados=? where id=?',(total,pJugador.darJugados(),pJugador.darGanados(),pJugador.darId()))
-        miConexion.commit()
-        miConexion.close()
+        '''()-void. actualiza jugados, ganados y acumulado de un jugador
+        @:parameter pJugador Jugador al que se le debe actualizar los juegos ganados
+        @:parameter pAcumulado el acumulado mayor'''
+        try:
+            pJugador.setJugados(pJugador.darJugados()+1)
+            pJugador.setGanados(pJugador.darGanados() + 1)
+            total=pAcumulado+pJugador.darAcumulado()
+            pJugador.setAcumulado(total)
+            miConexion=sqlite3.connect('../../data/bd/millonario.db')
+            miCursor=miConexion.cursor()
+            miCursor.execute('update jugador set acumulado=?,jugados=?,ganados=? where id=?',(total,pJugador.darJugados(),pJugador.darGanados(),pJugador.darId()))
+            miConexion.commit()
+            miConexion.close()
+        except Exception as e:
+            print('Error actualizando ganados youWin '+str(e))
     def actualizarYouDraw(self,pJugador,pAcumulado):
-        pJugador.setJugados(pJugador.darJugados() + 1)
-        total = pAcumulado + pJugador.darAcumulado()
-        pJugador.setAcumulado(total)
-        pJugador.setRetirados(pJugador.darRetirados()+1)
-        miConexion=sqlite3.connect('../../data/bd/millonario.db')
-        miCursor=miConexion.cursor()
-        miCursor.execute('update jugador set acumulado=?, jugados=?,retirados=? where id=?',(total,pJugador.darJugados(),pJugador.darRetirados(),pJugador.darId()))
-        miConexion.commit()
-        miConexion.close()
+        '''()-void. actualiza jugados, retirados de un jugador
+        @:parameter pJugador Jugador al que se le debe actualizar los juegos retirados
+        @:parameter pAcumulado el acumulado actual'''
+        try:
+            pJugador.setJugados(pJugador.darJugados() + 1)
+            total = pAcumulado + pJugador.darAcumulado()
+            pJugador.setAcumulado(total)
+            pJugador.setRetirados(pJugador.darRetirados()+1)
+            miConexion=sqlite3.connect('../../data/bd/millonario.db')
+            miCursor=miConexion.cursor()
+            miCursor.execute('update jugador set acumulado=?, jugados=?,retirados=? where id=?',(total,pJugador.darJugados(),pJugador.darRetirados(),pJugador.darId()))
+            miConexion.commit()
+            miConexion.close()
+        except Exception as e:
+            print('Error actualizando los retirados')
     def buscarJugadorPorNombre(self,pNombre):
+        '''()->Jugador Busca un jugador dado el nombre
+        @:parameter pNombre nombre a buscar
+        @:return Respuesta devuelve un Jugador, None en caso contrario'''
         i=0
         encontrado=False
         jugador=None
@@ -167,17 +206,17 @@ class Millonario:
         @:parameter: pNombre nuevo nombre de jugador
         @:parameter: pId id del jugador a actualizar nombre
         @:except: Lanza una excepción si no logra actualizar'''
-        try:
-            miConexion=sqlite3.connect('../../data/bd/millonario.db')
-            miCursor=miConexion.cursor()
-            miCursor.execute('update jugador set nombre=? where id=?',(pNombre,pId))
-            miConexion.commit()
-            miConexion.close()
-            jugador=self.buscarJugadorPorId(pId)
-            if jugador!=None:
-                jugador.setNombre(pNombre)
-        except Exception as e:
-            raise Exception('Hubo un error actualizando jugador: '+str(e))
+        #try:
+        miConexion = sqlite3.connect('../../data/bd/millonario.db')
+        miCursor = miConexion.cursor()
+        miCursor.execute('update jugador set nombre=? where id=?', (pNombre, pId))
+        miConexion.commit()
+        miConexion.close()
+        jugador,pos = self.buscarJugadorPorId(pId)
+        if jugador != None:
+            self.__jugadores[pos].setNombre(pNombre)
+        #except Exception as e:
+            #raise Exception('Hubo un error actualizando jugador: '+str(e))
     def buscarJugadorPorId(self,pId):
         '''()->Jugador Busca un jugador dado el id
         @:parameter pId id del jugador a buscar
@@ -206,11 +245,3 @@ class Millonario:
             self.__jugadores.pop(pos)
         except Exception as e:
             raise Exception('Error eliminano: '+str(e))
-
-
-
-
-#princial=Millonario()
-#princial.cargarJugadores()
-#princial.cargarPreguntas()
-#princial.cargarRespuestas()

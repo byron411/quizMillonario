@@ -130,16 +130,16 @@ class InterfazMillonario(QMainWindow):
             nom=nombre.strip()
             if boolenao:
                 if nom!='':
-                    try:
-                        pid=self.jugadores[item].darId()
-                        self.principal.actualizarJugador(nom,pid)
-                        self.ui.listWidgetJugadores.clear()
-                        self.refrescarJugadores()
-                        self.mostrarJugadorActual()
-                        self.ui.listWidgetJugadores.setCurrentRow(item)
-                        QMessageBox.information(self,'Actualizado','Se ha actualizado el jugador')
-                    except Exception as e:
-                        QMessageBox.critical(self,'Error','Error actualizando jugador '+str(e))
+                    #try:
+                    pid = self.jugadores[item].darId()
+                    self.principal.actualizarJugador(nom, pid)
+                    self.ui.listWidgetJugadores.clear()
+                    self.refrescarJugadores()
+                    self.mostrarJugadorActual()
+                    self.ui.listWidgetJugadores.setCurrentRow(item)
+                    QMessageBox.information(self,'Actualizado','Se ha actualizado el jugador')
+                    #except Exception as e:
+                    ##QMessageBox.critical(self,'Error','Error actualizando jugador '+str(e))
                 else:
                     QMessageBox.critical(self,'Error','Debe ingresar un nombre')
     def eliminarJugador(self):
